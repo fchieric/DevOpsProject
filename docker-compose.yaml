@@ -1,0 +1,98 @@
+version: '3.8'
+
+# definizione dei servizi (container) che compongono l'ambiente
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+        # nome personalizzato rende più facile identificare il container
+    container_name: jenkins
+        # mapping delle porte dall'host al container, formato: "porta_host:porta_container"
+    ports:
+        # interfaccia web
+      - "8080:8080"
+        # per interfacciarsi con altri jenkins agents
+      - "50000:50000"
+        # mappa la directory jenkins_home del container con un volume docker per mantenere configurazioni e dati
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    environment:
+        # disabilita la procedura guidata di installazione iniziale
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+        # connessione alla rete personalizzata
+    networks:
+      - devops_network
+        # politica di riavvio del container, unless-stopped: Riavvia sempre tranne che per arresti espliciti
+    restart: unless-stopped
+
+  # secondo 
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus
+    ports:
+      # interfaccia web
+      - "8081:8081"
+      # porta 8083: Potenzialmente per registry Docker privato
+      - "8083:8083"
+    volumes:
+      - nexus_data:/nexus-data
+      # configurazione dei parametri JVM
+    environment:
+      # imposta parametri di memoria per Java
+      - INSTALL4J_ADD_VM_PARAMS=-Xms2703m -Xmx2703m -XX:MaxDirectMemorySize=2703m
+    networks:
+      - devops_network
+    restart: unless-stopped
+
+  gitlab:
+    # immagine Community Edition di GitLab
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab
+    hostname: gitlab.local
+    ports:
+      # Porta 80: HTTP
+      - "80:80"
+      # Porta 443: HTTPS
+      - "443:443"
+      # Porta 22: SSH per Git
+      - "22:22"
+    volumes:
+      # Volume per configurazioni
+      - gitlab_config:/etc/gitlab
+      # Volume per log
+      - gitlab_logs:/var/log/gitlab
+      # Volume per dati
+      - gitlab_data:/var/opt/gitlab
+    environment:
+      # Configurazione Omnibus (sistema di configurazione di GitLab)
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.local'
+        registry_external_url 'http://gitlab.local:5050'
+        gitlab_rails['initial_root_password'] = 'password123'
+        
+      # URL esterno per accedere a GitLab
+      # URL per il registro Docker interno
+      # Password iniziale per l'utente root 
+      # NOTA: DA CAMBIARE ASSOLUTAMENTE se va in produzione!
+
+    # Dimensione della memoria condivisa, utile per migliorare le prestazioni
+    shm_size: '256m'
+    networks:
+      - devops_network
+    restart: unless-stopped
+
+networks:
+  devops_network:
+    driver: bridge
+
+# Definizione dei volumi persistenti
+volumes:
+  jenkins_home:
+    driver: local
+  nexus_data:
+    driver: local
+  gitlab_config:
+    driver: local
+  gitlab_logs:
+    driver: local
+  gitlab_data:
+    driver: local
