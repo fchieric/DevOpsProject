@@ -67,7 +67,11 @@ services:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab.local'
         registry_external_url 'http://gitlab.local:5050'
-        gitlab_rails['initial_root_password'] = 'password123'
+        gitlab_rails['initial_root_password'] = 'rootpassword123!'
+        gitlab_rails['initial_shared_runners_registration_token'] = "token-personalizzato"
+        gitlab_rails['initial_root_email'] = "root@gitlab.local"
+        gitlab_rails['gitlab_shell_ssh_port'] = 22
+        gitlab_rails['gitlab_email_enabled'] = false
         
       # URL esterno per accedere a GitLab
       # URL per il registro Docker interno
