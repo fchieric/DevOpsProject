@@ -1,0 +1,47 @@
+from flask import Flask
+from datetime import datetime
+import pytz
+import os
+
+app = Flask(__name__)
+
+# Configurazione del fuso orario italiano
+timezone = pytz.timezone('Europe/Rome')
+
+@app.route('/ciao')
+def hello():
+    # Ottiene il nome dell'agente dalla variabile d'ambiente o usa un default
+    agent_name = os.getenv('AGENT_NAME', 'Flask')
+    # Ottiene l'ora corrente nel fuso orario italiano
+    current_time = datetime.now(timezone)
+    formatted_time = current_time.strftime("%H:%M")
+    return f"Ciao mi chiamo {agent_name}, sono le ore {formatted_time}"
+
+@app.route('/salute')
+def health_check():
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now(timezone).isoformat()
+    }
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+
+
+# Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY app.py .
+
+# Variabile d'ambiente per il nome dell'agente (valore di default)
+ENV AGENT_NAME=Flask
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
