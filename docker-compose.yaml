@@ -66,17 +66,10 @@ services:
       # Configurazione Omnibus (sistema di configurazione di GitLab)
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab.local'
-        registry_external_url 'http://gitlab.local:5050'
         gitlab_rails['initial_root_password'] = 'xK9#mP2$vL5@nQ8'
-        gitlab_rails['initial_shared_runners_registration_token'] = "token-personalizzato"
-        gitlab_rails['initial_root_email'] = "root@gitlab.local"
-        gitlab_rails['gitlab_shell_ssh_port'] = 22
-        gitlab_rails['gitlab_email_enabled'] = false
-        
+        gitlab_rails['store_initial_root_password'] = true        
       # URL esterno per accedere a GitLab
-      # URL per il registro Docker interno
       # Password iniziale per l'utente root 
-      # NOTA: DA CAMBIARE ASSOLUTAMENTE se va in produzione!
 
     # Dimensione della memoria condivisa, utile per migliorare le prestazioni
     shm_size: '256m'
