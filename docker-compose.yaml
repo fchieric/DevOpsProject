@@ -56,6 +56,7 @@ services:
       # Volume per dati
       - gitlab_data:/var/opt/gitlab
     environment:
+      GITLAB_ROOT_PASSWORD_DISPLAY: "yes"
       # Configurazione Omnibus (sistema di configurazione di GitLab) e password iniziale per l'utente root 
       GITLAB_OMNIBUS_CONFIG: |
         gitlab_rails['store_initial_root_password'] = true
