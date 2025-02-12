@@ -58,7 +58,6 @@ services:
     environment:
       # Configurazione Omnibus (sistema di configurazione di GitLab) e password iniziale per l'utente root 
       GITLAB_OMNIBUS_CONFIG: |
-        gitlab_rails['initial_root_password'] = 'xK9#mP2$vL5@nQ8'
         gitlab_rails['store_initial_root_password'] = true
         puma['worker_processes'] = 0
 
