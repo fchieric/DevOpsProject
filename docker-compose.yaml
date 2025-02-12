@@ -51,10 +51,6 @@ services:
     ports:
       # Porta 80: HTTP
       - "80:80"
-      # Porta 443: HTTPS
-      - "443:443"
-      # Porta 22: SSH per Git
-      - "22:22"
     volumes:
       # Volume per configurazioni
       - gitlab_config:/etc/gitlab
@@ -63,13 +59,11 @@ services:
       # Volume per dati
       - gitlab_data:/var/opt/gitlab
     environment:
-      # Configurazione Omnibus (sistema di configurazione di GitLab)
+      # Configurazione Omnibus (sistema di configurazione di GitLab) e password iniziale per l'utente root 
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://gitlab.local'
         gitlab_rails['initial_root_password'] = 'xK9#mP2$vL5@nQ8'
-        gitlab_rails['store_initial_root_password'] = true        
-      # URL esterno per accedere a GitLab
-      # Password iniziale per l'utente root 
+        gitlab_rails['store_initial_root_password'] = true
+        puma['worker_processes'] = 0
 
     # Dimensione della memoria condivisa, utile per migliorare le prestazioni
     shm_size: '256m'
