@@ -21,8 +21,6 @@ services:
         # connessione alla rete personalizzata
     networks:
       - devops_network
-        # politica di riavvio del container, unless-stopped: Riavvia sempre tranne che per arresti espliciti
-    restart: unless-stopped
 
   # secondo 
   nexus:
@@ -41,7 +39,6 @@ services:
       - INSTALL4J_ADD_VM_PARAMS=-Xms2703m -Xmx2703m -XX:MaxDirectMemorySize=2703m
     networks:
       - devops_network
-    restart: unless-stopped
 
   gitlab:
     # immagine Community Edition di GitLab
@@ -65,11 +62,8 @@ services:
         gitlab_rails['store_initial_root_password'] = true
         puma['worker_processes'] = 0
 
-    # Dimensione della memoria condivisa, utile per migliorare le prestazioni
-    shm_size: '256m'
     networks:
       - devops_network
-    restart: unless-stopped
 
 networks:
   devops_network:
